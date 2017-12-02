@@ -67,12 +67,12 @@ def build_model(layers):
         input_dim=layers[0],
         output_dim=layers[1],
         return_sequences=True))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.8))
 
     model.add(LSTM(
         layers[2],
         return_sequences=False))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.8))
 
     model.add(Dense(
         output_dim=layers[2]))
@@ -83,18 +83,6 @@ def build_model(layers):
     print("Compilation Time : ", time.time() - start)
     return model
 
-def build_model2(layers):
-        d = 0.2
-        model = Sequential()
-        model.add(LSTM(128, input_shape=(layers[1], layers[0]), return_sequences=True))
-        model.add(Dropout(d))
-        model.add(LSTM(64, input_shape=(layers[1], layers[0]), return_sequences=False))
-        model.add(Dropout(d))
-        model.add(Dense(16,init='uniform',activation='relu'))        
-        model.add(Dense(1,init='uniform',activation='relu'))
-        model.compile(loss='mse',optimizer='adam',metrics=['accuracy'])
-        return model
-
 window = 5
 X_train, y_train, X_test, y_test = load_data(df[::-1], window)
 print("X_train", X_train.shape)
@@ -103,14 +91,14 @@ print("X_test", X_test.shape)
 print("y_test", y_test.shape)
 
 # model = build_model([3,lag,1])
-model = build_model2([3,window,1])
+model = build_model([3,window,1])
 
 model.fit(
     X_train,
     y_train,
-    batch_size=512,
-    nb_epoch=500,
-    validation_split=0.1,
+    batch_size=256,
+    nb_epoch=100,
+    validation_split=0.5,
     verbose=0)
 
 trainScore = model.evaluate(X_train, y_train, verbose=0)
